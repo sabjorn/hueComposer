@@ -33,5 +33,23 @@ from hueColour import Converter
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", type=str, default='192.168.0.191', 
+    parser.add_argument("--ip", type=str, default='Philips-hue.local', 
                         help='hue hub ip address')
+    parser.add_argument("--input", "--i", type=str, default='./',
+                        help='Input image directory')
+
+    args = parser.parse_args()
+    
+    #make ordered list of images in direcory
+    
+    try:
+        while 1:
+            #load image
+
+            #step through image
+
+            #back to load image
+
+    except KeyboardInterrupt:
+        #some sort of cleanup
+        0
