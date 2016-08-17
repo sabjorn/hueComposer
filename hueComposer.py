@@ -50,6 +50,12 @@ if __name__ == "__main__":
             #load image
 
             #step through image
+            """
+            set_light(self, light_id, parameter, value=None, transitiontime=None):
+            Adjust properties of one or more lights.
+            light_id can be a single lamp or an ARRAY of lamps!
+            parameters: 'on' : True|False , 'bri' : 0-254, 'sat' : 0-254, 'ct': 154-500
+            """
 
             #back to load image
 
