@@ -29,6 +29,9 @@ from time import sleep
 import PIL
 import numpy as np
 from phue import Bridge #https://github.com/studioimaginaire/phue
+
+# turns out Hue [0, 65535] and Saturation [0, 254] are available
+# as properties of the lights
 from hueColour import Converter
 
 if __name__ == "__main__":
