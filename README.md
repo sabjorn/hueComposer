@@ -25,7 +25,7 @@ sudo vim /etc/fstab
 adding
 
 ```
-/dev/sda1       /home/pi/imgs   vfat    nofail,uid=pi,gid=pi,ro    0       0
+/dev/sda1       /home/pi/imgs   vfat    nofail,uid=pi,gid=pi,rw    0       0
 ```
 
 
