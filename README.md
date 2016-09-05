@@ -28,6 +28,17 @@ adding
 /dev/sda1       /home/pi/imgs   vfat    nofail,uid=pi,gid=pi,rw    0       0
 ```
 
+##Dependencies
+* Phue
+* numpy
+* matplotlib
+* PILLOW
+
+##To Do
+Need some way to check which lights are actually available (which lights are plugged in and active)
+
+Filenames for images can contain metadata (rate of play and transition time)
+
 
 ## Notes
 * The IP address of the Hue should be locked on the router side.

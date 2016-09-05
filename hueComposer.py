@@ -24,9 +24,10 @@
 # The x-axis being time and y-axis being bulb index
 
 import argparse
+import glob #list all images
 from time import sleep
 
-import PIL
+from PIL import Image
 import numpy as np
 from phue import Bridge #https://github.com/studioimaginaire/phue
 
@@ -40,25 +41,57 @@ if __name__ == "__main__":
                         help='hue hub ip address')
     parser.add_argument("--input", "--i", type=str, default='./',
                         help='Input image directory')
+    parser.add_argument("--rate", "--r", type=float, default=1/25.,
+                        help='Rate in ms to step between pixel values')
+    parser.add_argument("--transition", "--t", type=float, default=0,
+                        help='Transition time in seconds')
 
     args = parser.parse_args()
+
+    b = Bridge(args.ip)
+    b.connect()
+
+    lights = b.lights
+
+    for x in lights:
+        x.transitiontime = args.transition
+
+    conv = Converter()
+
+    #make subset of lights which are active (a map)
     
-    #make ordered list of images in direcory
-    
+    #make ordered list of images in directory
+    imgs = glob.glob("{}/*.png".format(args.input))
+
     try:
-        while 1:
-            #load image
+        for i, names in enumerate(imgs):
+            img = Image.open(names)
+            img = np.asarray(img)
 
-            #step through image
-            """
-            set_light(self, light_id, parameter, value=None, transitiontime=None):
-            Adjust properties of one or more lights.
-            light_id can be a single lamp or an ARRAY of lamps!
-            parameters: 'on' : True|False , 'bri' : 0-254, 'sat' : 0-254, 'ct': 154-500
-            """
-
-            #back to load image
+            for x in np.arange(img.shape[1]):
+                lights[1].xy = conv.rgbToCIE(img[0, x, 0], img[0, x, 1], img[0, x, 2])
+                lights[2].xy = conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2])
+                sleep(args.rate)
 
     except KeyboardInterrupt:
         #some sort of cleanup
         0
+
+
+    # try:
+    #     while 1:
+    #         #load image
+
+    #         #step through image
+    #         """
+    #         set_light(self, light_id, parameter, value=None, transitiontime=None):
+    #         Adjust properties of one or more lights.
+    #         light_id can be a single lamp or an ARRAY of lamps!
+    #         parameters: 'on' : True|False , 'bri' : 0-254, 'sat' : 0-254, 'ct': 154-500
+    #         """
+
+    #         #back to load image
+
+    # except KeyboardInterrupt:
+    #     #some sort of cleanup
+    #     0
