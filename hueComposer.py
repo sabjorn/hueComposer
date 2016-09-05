@@ -39,7 +39,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", type=str, default='Philips-hue.local', 
                         help='hue hub ip address')
-    parser.add_argument("--input", "--i", type=str, default='./',
+    parser.add_argument("--input", "--i", type=str, default='/home/pi/imgs',
                         help='Input image directory')
     parser.add_argument("--rate", "--r", type=float, default=1/25.,
                         help='Rate in ms to step between pixel values')
