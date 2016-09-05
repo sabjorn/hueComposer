@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (c) 2016 Steven A. Bjornson
 # Permission is hereby granted, free of charge, to any person obtaining a copy 
 # of this software and associated documentation files (the "Software"), to deal 
@@ -69,10 +71,21 @@ if __name__ == "__main__":
             img = np.asarray(img)
 
             for x in np.arange(img.shape[1]):
-                lights[1].xy = conv.rgbToCIE(img[0, x, 0], img[0, x, 1], img[0, x, 2])
-                lights[1].brightness = np.average(img[0,x,:])
-                lights[2].xy = conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2])
-                lights[2].brightness = np.average(img[1,x,:])
+                bri = int(np.average(img[0,x,:]))
+                if bri > 0:
+                    command =  {'xy': conv.rgbToCIE(img[0, x, 0], img[0, x, 1], img[0, x, 2]), 'bri' : bri}
+                else:
+                    command = {'On': False}
+                b.set_light(2, command)
+                
+                bri = int(np.average(img[0,x,:]))
+                if bri > 0:
+                    command =  {'On':True, 'xy': conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2]), 'bri' : bri}
+                else:
+                    command = {'On': False}
+                b.set_light(3, command)
+                #lights[2].xy = conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2])
+                #lights[2].brightness = int(np.average(img[1,x,:]))
                 sleep(args.rate)
 
     except KeyboardInterrupt:
