@@ -70,7 +70,9 @@ if __name__ == "__main__":
 
             for x in np.arange(img.shape[1]):
                 lights[1].xy = conv.rgbToCIE(img[0, x, 0], img[0, x, 1], img[0, x, 2])
+                lights[1].brightness = np.average(img[0,x,:])
                 lights[2].xy = conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2])
+                lights[2].brightness = np.average(img[1,x,:])
                 sleep(args.rate)
 
     except KeyboardInterrupt:
