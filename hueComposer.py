@@ -33,22 +33,22 @@ import logging
 from PIL import Image
 import numpy as np
 from scipy.misc import imresize
-from phue import Bridge #https://github.com/studioimaginaire/phue
 
+from phue import Bridge #https://github.com/studioimaginaire/phue
 # turns out Hue [0, 65535] and Saturation [0, 254] are available
 # as properties of the lights
 from hueColour import Converter
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='hue.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='/home/pi/hueComposer/hue.log', level=logging.INFO, format='%(asctime)s %(message)s')
     logging.info('Started')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", type=str, default='Philips-hue.local', 
+    parser.add_argument("--ip", type=str, default='192.168.0.100', 
                         help='hue hub ip address')
     parser.add_argument("--input", "--i", type=str, default='/home/pi/imgs',
                         help='Input image directory')
-    parser.add_argument("--rate", "--r", type=float, default=1/25.,
+    parser.add_argument("--rate", "--r", type=float, default=1/5.,
                         help='Rate in ms to step between pixel values')
     parser.add_argument("--transition", "--t", type=float, default=0,
                         help='Transition time in seconds')
@@ -58,20 +58,19 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # connect!
+    b = Bridge(args.ip)
+    b.connect()
+
     while True:
         try:
-            b = Bridge(args.ip)
-            b.connect()
-        except SomeSpecificException:
+            lights = b.lights
+        except:
             continue
         break
 
-
-    lights = b.lights
-
     for x in lights:
         x.transitiontime = args.transition
+        x.on = True
 
     conv = Converter()
 
@@ -96,15 +95,16 @@ if __name__ == "__main__":
                     # where the lights are a list
                     # so make lists and then push out instead of pushing
 
+
             for x in np.arange(img.shape[1]):
                 commands = [];
                 for y in np.arange(args.numlights):
                 
                     bri = int(np.average(img[y,x,:]))
                     if bri > 0:
-                        command =  {'xy': conv.rgbToCIE(img[y, x, 0], img[y, x, 1], img[y, x, 2]), 'bri' : bri, 'On': True}
+                        command =  {'xy': conv.rgbToCIE(img[y, x, 0], img[y, x, 1], img[y, x, 2]), 'bri' : bri}
                     else:
-                        command = {'xy':  conv.rgbToCIE(1., 1., 1.), 'On': False}
+                        command = {'On': False}
                     commands.append(command)
                 for y, command in enumerate(commands):
                     b.set_light(y+1, command) # best to shoot these all out like this?
