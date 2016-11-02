@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # Copyright (c) 2016 Steven A. Bjornson
 # Permission is hereby granted, free of charge, to any person obtaining a copy 
@@ -28,9 +28,11 @@
 import argparse
 import glob #list all images
 from time import sleep
+import logging
 
 from PIL import Image
 import numpy as np
+from scipy.misc import imresize
 from phue import Bridge #https://github.com/studioimaginaire/phue
 
 # turns out Hue [0, 65535] and Saturation [0, 254] are available
@@ -38,6 +40,9 @@ from phue import Bridge #https://github.com/studioimaginaire/phue
 from hueColour import Converter
 
 if __name__ == "__main__":
+    logging.basicConfig(filename='hue.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.info('Started')
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", type=str, default='Philips-hue.local', 
                         help='hue hub ip address')
@@ -47,11 +52,21 @@ if __name__ == "__main__":
                         help='Rate in ms to step between pixel values')
     parser.add_argument("--transition", "--t", type=float, default=0,
                         help='Transition time in seconds')
+    parser.add_argument("--numlights", "--n", type=float, default=2,
+                        help='Number of active lights')
+
 
     args = parser.parse_args()
 
-    b = Bridge(args.ip)
-    b.connect()
+    # connect!
+    while True:
+        try:
+            b = Bridge(args.ip)
+            b.connect()
+        except SomeSpecificException:
+            continue
+        break
+
 
     lights = b.lights
 
@@ -70,27 +85,37 @@ if __name__ == "__main__":
             img = Image.open(names)
             img = np.asarray(img)
 
+            #shrink Y-axis to size of array
+            if(img.shape[0] != args.numlights):
+                img = imresize(img, (args.numlights, img.shape[1]))
+
+            # if issue with update rate persists, you probably want to dynamically make groups to that updates can be faster
+                # should probably reduce dynamic range of image to have more common images (or a thresh for closeness?)
+                # may not need dynamic groups but instead somethign like:
+                    # b.set_light( [1,2], 'on', True)
+                    # where the lights are a list
+                    # so make lists and then push out instead of pushing
+
             for x in np.arange(img.shape[1]):
-                bri = int(np.average(img[0,x,:]))
-                if bri > 0:
-                    command =  {'xy': conv.rgbToCIE(img[0, x, 0], img[0, x, 1], img[0, x, 2]), 'bri' : bri}
-                else:
-                    command = {'On': False}
-                b.set_light(2, command)
+                commands = [];
+                for y in np.arange(args.numlights):
                 
-                bri = int(np.average(img[0,x,:]))
-                if bri > 0:
-                    command =  {'On':True, 'xy': conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2]), 'bri' : bri}
-                else:
-                    command = {'On': False}
-                b.set_light(3, command)
-                #lights[2].xy = conv.rgbToCIE(img[1, x, 0], img[1, x, 1], img[1, x, 2])
-                #lights[2].brightness = int(np.average(img[1,x,:]))
+                    bri = int(np.average(img[y,x,:]))
+                    if bri > 0:
+                        command =  {'xy': conv.rgbToCIE(img[y, x, 0], img[y, x, 1], img[y, x, 2]), 'bri' : bri, 'On': True}
+                    else:
+                        command = {'xy':  conv.rgbToCIE(1., 1., 1.), 'On': False}
+                    commands.append(command)
+                for y, command in enumerate(commands):
+                    b.set_light(y+1, command) # best to shoot these all out like this?
+
                 sleep(args.rate)
 
     except KeyboardInterrupt:
         #some sort of cleanup
         0
+
+    logging.info('Finished')
 
 
     # try:
