@@ -1,0 +1,16 @@
+config:
+    lights: 2
+    username: "0uZofGOmMzGTuaPLi5EFeRl6NLht6vosMZM7P4cC"
+    ip: 192.168.1.68
+
+images:
+    0:
+        filename: ./test_images/rgb_grb.png
+        transition: 5
+        time: 120
+        scaletype: bilinear
+    1:
+        filename: ./test_images/rgb_grb.png
+        transition: 0
+        time: 120
+        scaletype: bilinear
