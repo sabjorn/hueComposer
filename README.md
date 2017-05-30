@@ -6,6 +6,13 @@ The basic goal is to provide a mechanism to drive 30+ Philips Hue lights.
 A USB stick containing images is read by the script. The pixel values for each column of an image are stepped through in time, with the pixel values of each row being transmitted to each individual Philips Hue.
 
 ##Setup
+###Directory Location
+This git should be put int:
+```
+/home/pi/
+```
+This will ensure that everything operates properly (hopefully).
+
 ###USB
 A FAT32 formatted USB stick is used. The images are stored on the top level.
 FSTAB is used to automount the USB stick on boot. This way the Pi can be restarted and have different images loaded onto the stick for quick prototyping.
@@ -27,6 +34,11 @@ adding
 ```
 /dev/sda1       /home/pi/imgs   vfat    nofail,uid=pi,gid=pi,rw    0       0
 ```
+
+###Upstart
+There is a `.conf` file in the `Upstart` directory in this git. Copy that file to `/etc/init/`. As long as Upstart is installed on the system this should get the Python script to run after reboot.
+
+There is a good guide on Upstart [here](https://www.digitalocean.com/community/tutorials/the-upstart-event-system-what-it-is-and-how-to-use-it).
 
 ##Dependencies
 * Phue
