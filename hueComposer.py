@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
                 if(config_flag):
                     args.transition = images[i]['transition']
-                    args.rate = (images[i]['time'] - (img.shape[1] * args.transition)) / img.shape[1]
+                    args.rate = (images[i]['time'] - (img.shape[1] * float(args.transition)/10.)) / img.shape[1]
                     if(args.rate < 1):
                         args.rate = 10
                         logging.info("Rate too slow")
