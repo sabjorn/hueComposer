@@ -6,7 +6,7 @@ config:
 images:
     0:
         filename: ./test_images/rgb_grb.png
-        transition: 5
+        transition: 50
         time: 120
         scaletype: bilinear
     1:
