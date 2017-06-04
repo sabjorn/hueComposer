@@ -31,6 +31,7 @@ from time import sleep
 import logging
 
 import yaml
+import netifaces
 
 from PIL import Image
 import numpy as np
@@ -40,6 +41,8 @@ from phue import Bridge  # https://github.com/studioimaginaire/phue
 # turns out Hue [0, 65535] and Saturation [0, 254] are available
 # as properties of the lights
 from hueColour import Converter
+
+adjust_time = 2.5
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -57,6 +60,9 @@ if __name__ == "__main__":
                         help='Number of active lights')
     parser.add_argument("--config", "-c", type=str,
                         help='run with config files')
+    parser.add_argument("--base", "-b", type=str, default="./",
+                        help='base directory of images')
+
 
     args = parser.parse_args()
 
@@ -78,6 +84,13 @@ if __name__ == "__main__":
             exit(1)
 
     b = Bridge(args.ip)
+
+    # try is to make sure network is connected
+    while True:
+        addr = netifaces.ifaddresses("eth0")
+        logging.info(addr)
+        if(netifaces.AF_INET in addr):
+            break
 
     #not fully tested!
     if(args.username is None):
@@ -109,24 +122,37 @@ if __name__ == "__main__":
 
     try:
         lights = b.lights
+
+        # all lights off
+        for x in lights:
+            x.on = False
+        sleep(5)
+
         while True:
             for i, names in enumerate(imgs):
                 logging.info(names)
 
-                for x in lights:
-                    x.transitiontime = args.transition
-                    x.on = True
+                for t, x in enumerate(lights):
+                    if(t < args.numlights):
+                        x.transitiontime = args.transition
+                        x.on = True
 
-                img = Image.open(names)
+
+                img = Image.open(args.base+names)
                 img = np.asarray(img)
+                logging.info("playing img: {}".format(args.base+names))
+                print "playing img: {}".format(args.base+names)
 
                 if(config_flag):
                     args.transition = images[i]['transition']
-                    args.rate = (images[i]['time'] - (img.shape[1] * float(args.transition)/10.)) / img.shape[1]
-                    if(args.rate < 1):
-                        args.rate = 10
-                        logging.info("Rate too slow")
-                        print("rate too slow")
+                    #args.rate = (images[i]['time'] - (img.shape[1] * float(args.transition)*10.)) / img.shape[1] #fixme
+                    args.rate = float(images[i]['time']/adjust_time)/ img.shape[1]
+                    logging.info(args.rate)
+                    # if(args.rate < 1):
+                    #     args.rate = 10
+                    #     logging.info("Rate too slow")
+                    #     print("rate too slow")
+
                 #shrink Y-axis to size of array
                 step = 1
                 if(img.shape[0] > args.numlights):
@@ -152,14 +178,13 @@ if __name__ == "__main__":
 
                 # image finished animation
                 for i, x in enumerate(lights):
-                    if(i % 2):
-                        x.on = False
+                    x.on = False
 
                 sleep(10)
     except KeyboardInterrupt, e:
         #some sort of cleanup
         logging.info("Keyboard Interrupt")
     except Exception, e:
-        logging.info("Something bad happened")
+        logging.exception("message")
 
     logging.info('Finished')

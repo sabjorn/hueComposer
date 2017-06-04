@@ -36,7 +36,9 @@ adding
 ```
 
 ### Upstart
-There is a `.conf` file in the `Upstart` directory in this git. Copy that file to `/etc/init/`. As long as Upstart is installed on the system this should get the Python script to run after reboot.
+There is a `.conf` file in the `Upstart` directory in this git. Copy that file to `/etc/init/`. 
+Make sure to start the upstart job with `sudo service starthue start` before reboot.
+As long as Upstart is installed on the system this should get the Python script to run after reboot.
 
 There is a good guide on Upstart [here](https://www.digitalocean.com/community/tutorials/the-upstart-event-system-what-it-is-and-how-to-use-it).
 
