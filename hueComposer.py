@@ -85,8 +85,6 @@ if __name__ == "__main__":
         except IOError:
             logging.exception("Could not open file: {}".format(args.config))
             exit(1)
-        except yaml.YAMLError as exc:
-            logging.exception("yaml file borked. ", exc)
         except:
             logging.exception("Error in config file")
 
