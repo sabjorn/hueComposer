@@ -28,6 +28,7 @@
 import argparse
 import glob  # list all images
 from time import sleep
+from time import strftime
 import logging
 
 import yaml
@@ -66,7 +67,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.basicConfig(filename='./hue.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='~/hueComposer/log/hue_{}.log'.format(strftime("%d-%m-%Y")), level=logging.INFO, format='%(asctime)s %(message)s')
     logging.info('Started')
 
     config_flag = args.config is not None
@@ -74,6 +75,7 @@ if __name__ == "__main__":
     if(config_flag):
         try:
             with open(args.config, 'r') as ymlfile:
+            try:
                 cfg = yaml.load(ymlfile)
                 config = cfg['config']
                 args.numlights = config['lights']
@@ -82,6 +84,8 @@ if __name__ == "__main__":
         except IOError:
             logging.exception("Could not open file: {}".format(args.config))
             exit(1)
+        except yaml.YAMLError as exc:
+            logging.exception("yaml file borked. ", exc)
         except:
             logging.exception("Error in config file")
 
