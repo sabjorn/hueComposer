@@ -93,6 +93,7 @@ if __name__ == "__main__":
         logging.info(addr)
         if(netifaces.AF_INET in addr):
             break
+        sleep(1)
 
     #not fully tested!
     if(args.username is None):
