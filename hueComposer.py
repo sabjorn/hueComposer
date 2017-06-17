@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.basicConfig(filename='~/hueComposer/log/hue_{}.log'.format(strftime("%d-%m-%Y")), level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='~/hueComposer/log/hue_{0}.log'.format(strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
     logging.info('Started')
 
     config_flag = args.config is not None
