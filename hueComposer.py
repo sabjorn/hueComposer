@@ -30,6 +30,7 @@ import glob  # list all images
 from time import sleep
 from time import strftime
 import logging
+from os.path import expanduser #to get home dir
 
 import yaml
 import netifaces
@@ -44,6 +45,7 @@ from phue import Bridge  # https://github.com/studioimaginaire/phue
 from hueColour import Converter
 
 adjust_time = 2.5
+home = expanduser("~")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -67,7 +69,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.basicConfig(filename='~/hueComposer/log/hue_{0}.log'.format(strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='{0}/hueComposer/log/hue_{1}.log'.format(home, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
     logging.info('Started')
 
     config_flag = args.config is not None
