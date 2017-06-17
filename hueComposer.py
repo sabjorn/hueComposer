@@ -75,7 +75,6 @@ if __name__ == "__main__":
     if(config_flag):
         try:
             with open(args.config, 'r') as ymlfile:
-            try:
                 cfg = yaml.load(ymlfile)
                 config = cfg['config']
                 args.numlights = config['lights']
