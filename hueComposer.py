@@ -127,7 +127,14 @@ if __name__ == "__main__":
         imgs = glob.glob("{}/*.png".format(args.input))
 
     try:
-        lights = b.lights
+        while True:
+            try:
+                lights = b.lights
+            except:
+                logging.info("can't connect to lights")
+                sleep(1)
+                continue
+            break
 
         # all lights off
         for x in lights:
