@@ -29,6 +29,7 @@ import argparse
 import glob  # list all images
 from time import sleep
 from time import strftime
+from time import time
 import logging
 
 import yaml
@@ -43,7 +44,7 @@ from phue import Bridge  # https://github.com/studioimaginaire/phue
 # as properties of the lights
 from hueColour import Converter
 
-adjust_time = 2.5
+http_delay = .04
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -115,7 +116,6 @@ if __name__ == "__main__":
 
     conv = Converter()
 
-    # make subset of lights which are active (a map)
     # make ordered list of images in directory
     imgs = []
     images = None
@@ -147,51 +147,54 @@ if __name__ == "__main__":
 
                 for t, x in enumerate(lights):
                     if(t < args.numlights):
-                        x.transitiontime = args.transition
                         x.on = True
+                        x.bri = 1
 
+                try:                
+                    img = Image.open(args.base+names)
+                    img = np.asarray(img)
+                except:
+                    continue
 
-                img = Image.open(args.base+names)
-                img = np.asarray(img)
                 logging.info("playing img: {}".format(args.base+names))
                 print "playing img: {}".format(args.base+names)
 
                 if(config_flag):
-                    args.transition = images[i]['transition']
-                    #args.rate = (images[i]['time'] - (img.shape[1] * float(args.transition)*10.)) / img.shape[1] #fixme
-                    args.rate = float(images[i]['time']/adjust_time)/ img.shape[1]
-                    logging.info(args.rate)
-                    # if(args.rate < 1):
-                    #     args.rate = 10
-                    #     logging.info("Rate too slow")
-                    #     print("rate too slow")
+                    args.transition = images[i]['transition']  # to seconds?
+                    args.rate = ((http_delay * args.numlights) + (args.transition))
 
+
+                for t, x in enumerate(lights):
+                    if(t < args.numlights):
+                        x.transitiontime = int(args.transition * 10)
+
+
+                x_step = img.shape[1] / float(images[i]['time']/args.rate)
+                logging.info("x-step size: {0}".format(x_step))
                 #shrink Y-axis to size of array
-                step = 1
+                y_step = 1
                 if(img.shape[0] > args.numlights):
-                    step = img.shape[0] / args.numlights
+                    y_step = img.shape[0] / args.numlights
                 elif(img.shape[0] < args.numlights):
                     img = imresize(img, (args.numlights, img.shape[1]))
 
-                # if issue with update rate persists, you probably want to dynamically make groups to that updates can be faster
-                    # should probably reduce dynamic range of image to have more common images (or a thresh for closeness?)
-                    # may not need dynamic groups but instead somethign like:
-                        # b.set_light( [1,2], 'on', True)
-                        # where the lights are a list
-                        # so make lists and then push out instead of pushing
-
-                for x in np.arange(img.shape[1]):
+                image_average = 0
+                image_start_time = time()
+                for x in np.arange(0, img.shape[1], x_step):
+                    start_time = time()
                     for y in np.arange(0, args.numlights):
                         bri = int(np.average(img[y, x, :]))
-                        lights[y].xy = conv.rgbToCIE(img[y*step, x, 0], img[y*step, x, 1], img[y*step, x, 2])
+                        lights[y].xy = conv.rgbToCIE(img[y*y_step, x, 0], img[y*y_step, x, 1], img[y*y_step, x, 2])
                         lights[y].bri = bri
-                    #print(x/float(img.shape[1]))
-
-                    sleep(args.rate)
+                    image_average += time() - start_time
+                    sleep(args.transition)
+                logging.info("time elapsed average image {0}, {1}".format(i, image_average/(img.shape[1]/x_step)))
+                logging.info("total image {0} elapsed time: {1}".format(i, time() - image_start_time))
 
                 # image finished animation
-                for i, x in enumerate(lights):
-                    x.on = False
+                for m, light in enumerate(lights): 
+                    light.on = False
+                    light.bri = 1
 
                 sleep(10)
     except KeyboardInterrupt, e:
