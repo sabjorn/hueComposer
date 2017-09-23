@@ -164,7 +164,7 @@ def hueMain():
 def audio(audio_file):
     if audio_file is not None:
         try:
-            return subprocess.Popen(["omxplayer", "--loop", audio_file], preexec_fn=os.setsid)
+            return subprocess.Popen(["omxplayer", "--loop", "--vol", "352", audio_file], preexec_fn=os.setsid)
         except Exception, e:
             logging.exception(e)
     else:
