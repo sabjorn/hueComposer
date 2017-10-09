@@ -187,7 +187,7 @@ if __name__ == "__main__":
                         help='run with config files')
     parser.add_argument("--base", "-b", type=str, default="./",
                         help='base directory of images')
-    parser.add_argument("--log", "-l", type=str, default="./",
+    parser.add_argument("--log", "-l", type=str, default="/dev/null",
                         help='log location')
     parser.add_argument("--audio", "-a", type=str,
                         help='Audio File to Play')
