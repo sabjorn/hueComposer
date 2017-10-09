@@ -1,7 +1,7 @@
-scipy==0.18.0
+#scipy==0.18.0 #uncomment it using pip to install
 netifaces==0.10.6
 matplotlib==1.5.2
 phue==0.9
-numpy==1.11.1
+#numpy==1.11.1 #uncomment it using pip to install
 Pillow==4.2.1
 PyYAML==3.12
