@@ -1,6 +1,7 @@
 [Unit]
-Description=My Script Service
-After=multi-user.target
+Description=Starts hueComposer on boot
+After=network-online.target
+#After=multi-user.target
 
 [Service]
 Type=simple

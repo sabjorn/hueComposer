@@ -37,6 +37,7 @@ import yaml
 import netifaces
 
 import os
+import sys
 import subprocess
 import signal
 
@@ -131,7 +132,7 @@ def hueMain():
                     x.transitiontime = int(args.transition * 10)
 
 
-            x_step = img.shape[1] / float(images[i]['time']/args.rate)
+            x_step = int(img.shape[1] / float(images[i]['time']/args.rate))
             logging.info("x-step size: {0}".format(x_step))
             #shrink Y-axis to size of array
             y_step = 1
@@ -187,16 +188,19 @@ if __name__ == "__main__":
                         help='run with config files')
     parser.add_argument("--base", "-b", type=str, default="./",
                         help='base directory of images')
-    parser.add_argument("--log", "-l", type=str, default="/dev/null",
+    parser.add_argument("--log", "-l", type=str,
                         help='log location')
     parser.add_argument("--audio", "-a", type=str,
                         help='Audio File to Play')
 
 
     args = parser.parse_args()
-
-    logging.basicConfig(filename='{0}/hue_{1}.log'.format(args.log, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
-    logging.info('Started')
+    
+    if args.log is not None:
+        logging.basicConfig(filename='{0}/hue_{1}.log'.format(args.log, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
+        logging.info('Started')
+    else:
+        logging.disable(sys.maxint)
 
     config_flag = args.config is not None
     cfg = None
