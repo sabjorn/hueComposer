@@ -35,12 +35,22 @@ adding
 /dev/sda1       /home/pi/imgs   vfat    nofail,uid=pi,gid=pi,rw    0       0
 ```
 
-### Upstart
-There is a `.conf` file in the `Upstart` directory in this git. Copy that file to `/etc/init/`. 
-Make sure to start the upstart job with `sudo service starthue start` before reboot.
-As long as Upstart is installed on the system this should get the Python script to run after reboot.
+### SystemD
+Copy the `hueComposer.service` into the correct spot
 
-There is a good guide on Upstart [here](https://www.digitalocean.com/community/tutorials/the-upstart-event-system-what-it-is-and-how-to-use-it).
+```
+sudo cp ./systemd/hueComposer.service /etc/systemd/system
+```
+
+then enable it
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable hueComposer
+```
+
+This will make the `hueComposer` app run on boot. 
+
 
 ## Dependencies
 * Phue
