@@ -188,7 +188,7 @@ if __name__ == "__main__":
                         help='run with config files')
     parser.add_argument("--base", "-b", type=str, default="./",
                         help='base directory of images')
-    parser.add_argument("--log", "-l", type=str,
+    parser.add_argument("--log", "-l", type=str, default="/var/log"
                         help='log location')
     parser.add_argument("--audio", "-a", type=str,
                         help='Audio File to Play')
@@ -196,11 +196,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-    if args.log is not None:
-        logging.basicConfig(filename='{0}/hue_{1}.log'.format(args.log, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
-        logging.info('Started')
-    else:
-        logging.disable(sys.maxint)
+    logging.basicConfig(filename='{0}/hue_{1}.log'.format(args.log, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.info('Started')
 
     config_flag = args.config is not None
     cfg = None
