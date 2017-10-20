@@ -55,14 +55,6 @@ http_delay = .04 # average time of HTTP transmission per light
 def hueMain():
     b = Bridge(args.ip)
 
-    # try is to make sure network is connected
-    while True:
-        addr = netifaces.ifaddresses("eth0")
-        logging.info(addr)
-        if(netifaces.AF_INET in addr):
-            break
-        sleep(1)
-
     #not fully tested!
     if(args.username is None):
         b.connect()
@@ -156,6 +148,7 @@ def hueMain():
 
             # image finished animation
             for m, light in enumerate(lights):
+                light.transitiontime = 0
                 light.on = False
                 light.bri = 1
 
@@ -172,7 +165,7 @@ def audio(audio_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", type=str, default='192.168.1.64',
+    parser.add_argument("--ip", type=str, default='192.168.1.100',
                         help='hue hub ip address')
     parser.add_argument("--username", "-u", type=str,
                         help="Hue hub username.")
@@ -188,14 +181,13 @@ if __name__ == "__main__":
                         help='run with config files')
     parser.add_argument("--base", "-b", type=str, default="./",
                         help='base directory of images')
-    parser.add_argument("--log", "-l", type=str, default="/var/log"
+    parser.add_argument("--log", "-l", type=str, default="/var/log",
                         help='log location')
     parser.add_argument("--audio", "-a", type=str,
                         help='Audio File to Play')
 
 
     args = parser.parse_args()
-    
     logging.basicConfig(filename='{0}/hue_{1}.log'.format(args.log, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
     logging.info('Started')
 
@@ -218,7 +210,24 @@ if __name__ == "__main__":
     try:
         proc = audio(args.audio)
         hueMain()
-
+    except IOError as e:
+        # an IOError exception occurred (socket.error is a subclass)
+        # try is to make sure network is connected
+        logging.exception(e)
+        if (e.errno == 101):
+            # now we had the error code 101, network unreachable
+            # try is to make sure network is connected
+            while True:
+                addr = netifaces.ifaddresses("eth0")
+                logging.info(addr)
+                if(netifaces.AF_INET in addr):
+                    break
+                sleep(1)
+        if e.errno == 113:
+            logging.info("Error 113, sleeping for 10 seconds before attempting reconnect") 
+            sleep(10)
+        else:
+            logging.exception(e)
     except KeyboardInterrupt, e:
         #some sort of cleanup
         if proc is not None:

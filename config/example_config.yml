@@ -1,16 +1,23 @@
 config:
-    lights: 2
-    username: "0uZofGOmMzGTuaPLi5EFeRl6NLht6vosMZM7P4cC"
-    ip: 192.168.1.68
+    lights: 10
+    username: l82pa25uAY3Uc4jErccqLAanZU3Fky4OjTT5XQZx
+    ip: 192.168.0.100
+    #ip: small.local
 
 images:
     0:
-        filename: ./test_images/rgb_grb.png
-        transition: 50
-        time: 120
-        scaletype: bilinear
-    1:
-        filename: ./test_images/rgb_grb.png
+        filename: 1.spring.png
         transition: 0
         time: 120
-        scaletype: bilinear
+    1:
+        filename: 2.summer.png
+        transition: .25
+        time: 120
+    2:
+        filename: 3.autumn-jpg.png
+        transition: .5
+        time: 120
+    3:
+        filename: 4.winter.png
+        transition: 1
+        time: 120
