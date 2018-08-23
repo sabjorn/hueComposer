@@ -45,11 +45,10 @@ update_config=1
 country=CA
 
 network={
-    ssid="house-catsle"
+    ssid=\"house-catsle\"
     psk=3cd725e65d69d40b9643ddc556c3e8a3574255c4b867c721e47b5a045cb435ed
 }" > /etc/wpa_supplicant/wpa_supplicant.conf
-#systemctl daemon-reload
-# systemctl restart wpa_supplicant
+#systemctl enable wpa_supplicant
 
 ## Setup routerless Hue Hub connection (ethernet directly to Hub)
 # setup DHCPCD
