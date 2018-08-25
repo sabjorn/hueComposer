@@ -188,7 +188,7 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-    logging.basicConfig(filename='{0}/hue_{1}.log'.format(args.log, strftime("%d-%m-%Y-%H-%M")), level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
     logging.info('Started')
 
     config_flag = args.config is not None
