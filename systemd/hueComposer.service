@@ -7,7 +7,7 @@ After=network-online.target
 Type=simple
 Restart=always
 RestartSec=3
-ExecStart=/usr/bin/python /root/hueComposer/hueComposer.py -c /root/imgs/config.yml -b /home/pi/imgs/
+ExecStart=/usr/bin/python /root/hueComposer/hueComposer.py -c /root/imgs/config.yml -b /root/imgs/
 
 [Install]
 WantedBy=multi-user.target
